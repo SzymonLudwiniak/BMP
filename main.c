@@ -1,35 +1,21 @@
 #include <stdio.h>
+#include <stdlib.h>
 
-#include "header.h"
+#include "pixel.h"
 
 
 int main(int argc, char *argv[])
 {
     FILE * file = fopen(argv[1], "rb+");
 
+    PIXEL * pixelMatrix = get_pixel_matrix(file);
     if(file == NULL)
     {
         puts("oof");
         return 1;
     }
 
-    BMP_HEADER * header = get_header(file);
-
-    if(header == NULL) 
-    {
-        puts("something went wrong");
-    }
-    else
-    {
-        printf("size: %x\nwidth: %x\nheight: %x\nbits: %x\n", 
-                header->Size,
-                header->Width,
-                header->Height,
-                header->BitCount);
-        get_pixel_matrix(header, file);
-    }
-
     fclose(file);
-
+    free(pixelMatrix);
     return 0;
 }

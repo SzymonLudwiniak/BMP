@@ -5,7 +5,7 @@
 #include <stdio.h>
 
 
-typedef struct{
+typedef struct {
     //HEADER - 14 bytes
     uint16_t Signature; // "BM" - bitmap 0x42 0x4D
     uint32_t FileSize;  // can be skipped
@@ -15,7 +15,7 @@ typedef struct{
     //DIB HEADER
     uint32_t Size;  //dib header size
     uint32_t Width; // visible width
-    uint32_t Height; // image height
+    int32_t Height; // image height
     uint16_t Planes; // wiki says must be 1
     uint16_t BitCount; //bits per pixel
     uint32_t Compression; // wish none
@@ -28,6 +28,7 @@ typedef struct{
 
 
 BMP_HEADER * get_header(FILE * file);
-uint8_t * get_pixel_matrix(BMP_HEADER * header, FILE * file);
+uint8_t * get_bytes_matrix(BMP_HEADER * header, FILE * file);
+
 
 #endif

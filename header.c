@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <math.h>
 
 #include "header.h"
 
@@ -18,7 +19,7 @@ BMP_HEADER * get_header(FILE * file)
 
     fread(&(bmp_header->Size), sizeof(uint32_t), 1, file);
     fread(&(bmp_header->Width), sizeof(uint32_t), 1, file);
-    fread(&(bmp_header->Height), sizeof(uint32_t), 1, file);
+    fread(&(bmp_header->Height), sizeof(int32_t), 1, file);
     fread(&(bmp_header->Planes), sizeof(uint16_t), 1, file);
     fread(&(bmp_header->BitCount), sizeof(uint16_t), 1, file);
     fread(&(bmp_header->Compression), sizeof(uint32_t), 1, file);
@@ -31,12 +32,12 @@ BMP_HEADER * get_header(FILE * file)
     return bmp_header;
 }
 
-uint8_t * get_pixel_matrix(BMP_HEADER * header, FILE * file)
+uint8_t * get_bytes_matrix(BMP_HEADER * header, FILE * file)
 {
     fseek(file, header->DataOffset, SEEK_SET);
 
     size_t row_len = (size_t)((header->BitCount * header->Width + 31)/32)*4;
-    size_t byte_amount = row_len*header->Height;
+    size_t byte_amount = row_len*abs(header->Height);
     
     uint8_t * matrix = (uint8_t *)malloc(sizeof(uint8_t)*byte_amount);
 
