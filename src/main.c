@@ -1,31 +1,26 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 #include "../include/pixel.h"
+#include "../include/utility.h"
 
 
 int main(int argc, char *argv[])
 {
-    FILE * file = fopen(argv[1], "rb+");
-    int strLen = strlen(argv[1]);
-    char * newFileName;
-    newFileName = (char *)malloc(sizeof(char)*(strLen+3));
-    strcpy(newFileName, argv[1]);
-    int index = strLen-4;
-    newFileName[index] = 'm';
-    newFileName[index+1] = 'o';
-    newFileName[index+2] = 'd';
-    newFileName[index+3] = '.';
-    strcat(newFileName, "bmp");
+    FILE * file = fopen(argv[1], "rb");
+    
+    char * newFileName = createNewFileName(argv);
 
-    PIXEL * pixelMatrix = get_pixel_matrix(file);
-    BMP_HEADER * header = get_header(file);
     if(file == NULL)
     {
         puts("oof");
         return 1;
     }
+
+    PIXEL * pixelMatrix = get_pixel_matrix(file);
+    BMP_HEADER * header = get_header(file);
+
+    if(header == NULL)
+        return 1;
 
     size_t * mask[3];
     mask[0] = (size_t *)malloc(sizeof(size_t)*3);
@@ -46,12 +41,25 @@ int main(int argc, char *argv[])
 
     PIXEL * newPixelMatrix = get_modified_matrix(pixelMatrix, header, mask);
 
+    fclose(file);
 
-    FILE * newFile = fopen(newFileName, "wb");
-    set_new_file(newFile, header, newPixelMatrix);
+    file = fopen(newFileName, "wb");
+    if(file == NULL)
+    {
+        puts("oof");
+        return 1;
+    }
+    set_new_file(file, header, newPixelMatrix);
 
     fclose(file);
+
+    for(int i = 0; i < 3; i++)
+    {
+        free(mask[i]);
+    }
+
     free(pixelMatrix);
     free(newPixelMatrix);
+    free(newFileName);
     return 0;
 }
